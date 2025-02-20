@@ -31,7 +31,7 @@ const resetAsyncStorage = async () => {
   }
 };
 
-resetAsyncStorage() 
+//resetAsyncStorage() 
 console.log("app is running")
 
 
