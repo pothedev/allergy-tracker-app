@@ -12,6 +12,9 @@ import nettleImage from "../assets/nettle.png";
 import timothyImage from "../assets/timothy.png";
 import goosefootImage from "../assets/goosefoot.png";
 import alderImage from "../assets/alder.png";
+import oakImage from "../assets/oak.png";
+import plantainImage from "../assets/plantain.png";
+
 import StorageContext from "./StorageContext";
 
 import { ImageSourcePropType } from 'react-native';
@@ -27,7 +30,9 @@ export const plantImages: Record<string, ImageSourcePropType> = {
   nettle: nettleImage,
   timothy: timothyImage,
   goosefoot: goosefootImage,
-  alder: alderImage
+  alder: alderImage,
+  oak: oakImage,
+  plantain: plantainImage
 };
 
 const PlantsLibrary: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -43,7 +48,7 @@ const PlantsLibrary: React.FC<{ navigation: any }> = ({ navigation }) => {
 
 
   const getIntensity = (plant: string) => {
-    const foundPlant = currentlyBlooming.find((p) => p.name.toLowerCase() === plant);
+    const foundPlant = currentlyBlooming.find((p:any) => p.name.toLowerCase() === plant);
     return foundPlant ? foundPlant.intensity : 'Not in season';
   };
 
@@ -65,6 +70,8 @@ const PlantsLibrary: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Plant plant="timothy" intensity={getIntensity('timothy')} navigation={navigation}></Plant>
           <Plant plant="nettle" intensity={getIntensity('nettle')} navigation={navigation}></Plant>
           <Plant plant="goosefoot" intensity={getIntensity('goosefoot')} navigation={navigation}></Plant>
+          <Plant plant="oak" intensity={getIntensity('oak')} navigation={navigation}></Plant>
+          <Plant plant="plantain" intensity={getIntensity('plantain')} navigation={navigation}></Plant>
           
         </View>
       </View>

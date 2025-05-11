@@ -12,42 +12,76 @@ interface StorageProviderProps {
   children: ReactNode;
 }
 
+const defaultLevels: Record<string, number> = { 
+  ragweed: 5, 
+  mugwort: 4,
+  birch: 2,
+  poplar: 3,
+  timothy: 3,
+  nettle: 1,
+  goosefoot: 0,
+  alder: 3,
+  oak: 2, 
+  plantain: 2
+};
+
 export const StorageProvider: React.FC<StorageProviderProps> = ({ children }) => {
   const [storedData, setStoredData] = useState<{ [key: string]: any }>({});
   const [isLoading, setIsLoading] = useState(true); // Track loading state
 
-  
+  const sanitizeString = (input: string | null): string | null => {
+    if (!input) return null;
+    // Remove all escape characters and extra quotes
+    let sanitized = input.replace(/\\+/g, ''); // Remove all backslashes
+    sanitized = sanitized.replace(/^"+|"+$/g, ''); // Remove surrounding quotes
+    return sanitized;
+  };
 
   // Load individual values from AsyncStorage
   useEffect(() => {
     const loadStoredData = async () => {
       try {
         console.log("🔹 Loading AsyncStorage keys individually...");
-
+    
         const city = await AsyncStorage.getItem('city');
         const latitude = await AsyncStorage.getItem('latitude');
         const longitude = await AsyncStorage.getItem('longitude');
         const language = await AsyncStorage.getItem('language');
         const theme = await AsyncStorage.getItem('theme');
+        const locations = await AsyncStorage.getItem('locations');
+        const currentlyBlooming = await AsyncStorage.getItem('currentlyBlooming');
+        const levels = await AsyncStorage.getItem('levels');
+        const pendingProfileSetup = await AsyncStorage.getItem('pendingProfileSetup');
 
+        const cleanedCity = sanitizeString(city);
+        const cleanedLat = sanitizeString(latitude);
+        const cleanedLon = sanitizeString(longitude);
+        const cleanedLanguage = sanitizeString(language);
+        const cleanedTheme = sanitizeString(theme);
+        const cleanedPendingProfileSetup = sanitizeString(pendingProfileSetup);
+
+    
         const newData = {
-          city: city || "Unknown city",
-          latitude: latitude || "0",
-          longitude: longitude || "0",
-          language: language || "en",
-          theme: theme || "dark",
+          city: cleanedCity || "Unknown city",
+          latitude: cleanedLat || "0",
+          longitude: cleanedLon || "0",
+          language: cleanedLanguage || "en",
+          theme: cleanedTheme || "dark",
+          locations: locations ? JSON.parse(locations) : [],
+          currentlyBlooming: currentlyBlooming ? JSON.parse(currentlyBlooming) : [],
+          levels: levels ? JSON.parse(levels) : defaultLevels,
+          pendingProfileSetup: pendingProfileSetup || "false"
         };
-
+    
         console.log("✅ AsyncStorage Loaded:", newData);
-
+    
         setStoredData(newData);
       } catch (error) {
         console.error("❌ Error loading AsyncStorage:", error);
       } finally {
         setIsLoading(false);
       }
-    };
-
+    };    
     loadStoredData();
   }, []);
 

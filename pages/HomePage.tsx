@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo} from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef} from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform, SafeAreaView, StatusBar, ActivityIndicator} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { colorMap, intensityColor, translation, bloomingNow, upcoming, bloomingDict, upcomingDict, weekdays, months, recommendations} from '../data';
@@ -11,6 +11,9 @@ import StorageContext from './StorageContext';
 
 import FastImage from 'react-native-fast-image';
 
+import isEqual from 'lodash.isequal';
+
+import NetInfo from "@react-native-community/netinfo";
 
 console.log("HomePage is rendering");
 const screenWidth = Dimensions.get("window").width;
@@ -47,6 +50,7 @@ import veryHighEnLight from '../assets/veryHighEnLight.png';
 
 import notInSeasonUa from '../assets/notInSeasonUa.png';
 import menuIcon from '../assets/coolmenu.png';
+import { useSafeArea } from 'native-base';
 
 const statusBarHeight = StatusBar.currentHeight;
 
@@ -75,6 +79,25 @@ const intensityImageMap: Record<
     "Very high": { dark: veryHighEnDark, light: veryHighEnLight },
   },
 };
+
+
+const OfflinePanel: React.FC<{
+  theme: string;
+  setShowOfflinePanel: any
+}> = ({ theme, setShowOfflinePanel }) => (
+  <View style={[styles.logoutPanel, { backgroundColor: colorMap[theme + "Widget"], shadowColor: colorMap[theme+"Shadow"] }]}>
+    <Text style={{ color: colorMap[theme + "Text"], fontSize: 18, fontWeight: 'semibold', textAlign: "center" }}>You're Offline</Text>
+    <Text style={{ color: colorMap[theme + "Text2"], fontSize: 14, marginBottom: 10, marginTop: 20 }}>The information you're viewing is from your last session.</Text>
+    <Text style={{ color: colorMap[theme + "Text2"], fontSize: 14, marginBottom: 20}}>Some features may be unavailable until you're back online.</Text>
+    <View style={{ flexDirection: "row", justifyContent: "center", width: "100%", marginTop: 10 }}>
+      <TouchableOpacity style={[styles.cancelButton, { borderColor: colorMap[theme + "Widget4"] }]} onPress={() => setShowOfflinePanel(false)}>
+        <Text style={{ color: colorMap[theme + "Text"], fontWeight: "semibold", textAlign: "center" }}>Continue</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+
 
 const WeeklyIntensityChart2: React.FC<{ theme: any; language: any; weeklyIntensityMap: Record<string, number[]> }> = ({
   theme,
@@ -171,6 +194,8 @@ const WeeklyIntensityChart2: React.FC<{ theme: any; language: any; weeklyIntensi
 
 const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const lastCurrentlyBloomingRef = useRef<any>(null);
+
 
   const storage = useContext(StorageContext);
   if (!storage) return null;
@@ -187,11 +212,20 @@ const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
   } = storedData;
 
 
-
   const [currentlyBlooming, setCurrentlyBlooming] = useState<{ name: string; intensity: string }[]>([]);
   const [upcomingDates, setUpcomingDates] = useState<Array<[string, string]>>([]);
   const [maxIntensity, setMaxIntensity] = useState<string>('Not in season');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showOfflinePanel, setShowOfflinePanel] = useState<boolean>(false)
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) setShowOfflinePanel(false)
+      else setShowOfflinePanel(true)
+      //setShowOfflinePanel(state.isConnected ?? true)
+    });
+    return () => unsubscribe();
+  }, []);
   
 
   const buildWeeklyIntensityMap = (currentlyBlooming: Record<string, Record<string, number>>): Record<string, number[]> => {
@@ -240,7 +274,9 @@ const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
     return adjustedBloomingDates 
       ? buildWeeklyIntensityMap(adjustedBloomingDates)
       : {};
-  }, [adjustedBloomingDates, refreshTrigger]); // 🔥 Force re-render  
+  }, [adjustedBloomingDates, refreshTrigger]); // 🔥 Force re-render 
+  
+  
 
   const getClosestUpcomingDates = (bloomingDates: Record<string, Record<string, number>>): Array<[string, string]> => {
     // Helper function to get the date object from a string (e.g., '2023-04-12')
@@ -283,7 +319,7 @@ const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
     const updateBloomingData = () => {
       if (!adjustedBloomingDates) return;
       
-      console.log("🌼 Updated blooming dates received:", adjustedBloomingDates);
+      console.log("🌼 Updated blooming dates received:");
       
       const today = new Date().toISOString().split("T")[0];
       const newBlooming = Object.entries(adjustedBloomingDates)
@@ -298,7 +334,10 @@ const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       console.log("🌼 New blooming dict:", newBlooming);
       setCurrentlyBlooming(newBlooming);
-      updateStoredData("currentlyBlooming", newBlooming)
+      if (!isEqual(lastCurrentlyBloomingRef.current, newBlooming)) {
+        lastCurrentlyBloomingRef.current = newBlooming;
+        updateStoredData("currentlyBlooming", newBlooming);
+      }      
       
       setUpcomingDates(getClosestUpcomingDates(adjustedBloomingDates));
   
@@ -328,127 +367,138 @@ const HomePage: React.FC<{ navigation: any }> = ({ navigation }) => {
           style={styles.gif}
           resizeMode={FastImage.resizeMode.contain}
         />
-        <Text style={styles.loadingText}>{translation[language]["Loading Allergy Data..."]}</Text>
+        <Text style={styles.loadingText}>{translation[language]["Loading Allergy Data..."] || "Loading Allergy Data..."}</Text>
       </View>
     );
   }
   
-  return (
-    <ScrollView style={[styles.container, { backgroundColor: colorMap[theme + "Background"] }]}>
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <View>
-          <Text style={[styles.dateText, { color: colorMap[theme + "Text2"] }]}>
-            {`${translation[language][weekdays[new Date().getDay()]] || new Date().getDay()}, ${new Date().getDate()} ${translation[language][months[new Date().getMonth() + 1]] || new Date().getMonth() + 1}`}
-          </Text>
-          <Text style={[styles.titleText, { color: colorMap[theme + "Text"] }]}>
-            {translation[language]['Allergy progression']}
-          </Text>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-          <Image
-            source={menuIcon}
-            style={[styles.menuIcon]}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      </View>   
+  return ( 
+  <View style={{ flex: 1, position: "relative" }}>
+      <ScrollView style={[styles.container, { backgroundColor: colorMap[theme + "Background"] }]}>
+        {/* Header Section */}
+        <View style={styles.headerContainer}>
+          <View>
+            <Text style={[styles.dateText, { color: colorMap[theme + "Text2"] }]}>
+              {`${translation[language][weekdays[new Date().getDay()]] || new Date().getDay()}, ${new Date().getDate()} ${translation[language][months[new Date().getMonth() + 1]] || new Date().getMonth() + 1}`}
+            </Text>
+            <Text style={[styles.titleText, { color: colorMap[theme + "Text"] }]}>
+              {translation[language]['Allergy progression']}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
+            <Image
+              source={menuIcon}
+              style={[styles.menuIcon]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>   
 
-      {/* Currently Blooming Section */}
-      <View style={[styles.bloomingContainer, { backgroundColor: colorMap[theme + "Widget"], shadowColor: colorMap[theme + "Shadow"] }]}>
-        <View style={styles.currentlyBlooming}>
+        {/* Currently Blooming Section */}
+        <View style={[styles.bloomingContainer, { backgroundColor: colorMap[theme + "Widget"], shadowColor: colorMap[theme + "Shadow"] }]}>
+          <View style={styles.currentlyBlooming}>
+            <Text style={[styles.sectionTitle, { color: colorMap[theme + "Text"] }]}>
+              {translation[language]['Currently blooming']}
+            </Text>
+            <View style={styles.allergyList}>
+              {currentlyBlooming.length === 0 ? (
+                <Text style={[styles.supertext, { color: colorMap[theme + "Text2"] }]}>
+                  {translation[language]['The plants you have selected are currently out of season']}
+                </Text>
+              ) : (
+                currentlyBlooming.map((plant, index) => (
+                  <View key={index} style={[styles.currentAllergyContainer, {backgroundColor: colorMap[theme+"Widget2"]}]}>
+                    <Text style={[styles.allergyText, { color: colorMap[theme + "Text"] }]}>
+                      {translation[language][plant.name] || plant.name}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.intensityText,
+                        { color: intensityColor[plant.intensity] },
+                      ]}
+                    >
+                      {translation[language][plant.intensity] || plant.intensity}
+                    </Text>
+                  </View>
+                ))
+              )}
+            </View> 
+          </View>
+          <View style={styles.gaugeContainer}>
+            {/* Dynamically load the gauge image based on maxIntensity */}
+            <Image source={intensityImageMap[language][maxIntensity][theme]} style={styles.gaugeImage} />
+            <Text style={[styles.locationText, { color: colorMap[theme + "Text"] }]}>
+              {translation[language]['Your location']}
+            </Text>
+            <Text style={[styles.placeText, { color: colorMap[theme + "Text2"] }]}>{city}</Text>
+          </View>
+        </View>
+
+        
+        
+        {/* <Text>{recommendations[language][maxIntensity]["Symptoms"]}</Text>
+        <Text>{recommendations[language][maxIntensity]["Precautions"]}</Text>
+        <Text>{recommendations[language][maxIntensity]["Recommendation"]}</Text> */}
+
+
+        {/* Weekly intensity graph */}
+        <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Weekly intensity graph"]}</Text>
+        <WeeklyIntensityChart2 language={language} theme={theme} weeklyIntensityMap={weeklyIntensityMap}></WeeklyIntensityChart2>
+
+        {/* Recomemndations */}
+        <View style={[styles.recommendationsContainer, { borderColor: colorMap[theme+"Widget2"], shadowColor: colorMap[theme + "Shadow"]}]}>
+          <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Symptoms"]}</Text>
+          <View style={{paddingHorizontal: 30}}>
+            <Text style={{color: colorMap[theme+"Text"]}}>{recommendations[language][maxIntensity]["Symptoms"]}</Text>
+          </View>
+          <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Recommendations"]}</Text>
+          <View style={{paddingHorizontal: 30}}>
+            <Text style={{color: colorMap[theme+"Text"]}}>{recommendations[language][maxIntensity]["Recommendations"]}</Text>
+          </View>
+        </View>
+      
+
+        {/* Upcoming Section */}
+        <View style={styles.upcomingContainer}>
+          <Text style={[styles.sectionTitle, { color: colorMap[theme + 'Text'] }]}>
+            {translation[language]['Upcoming']}
+          </Text>
+          {upcomingDates.length > 0 ? (
+            upcomingDates.map((plant, index) => (
+              <UpcomingAllergy key={index} plant={plant[0]} date={plant[1]} language={language} theme={theme} />
+            ))
+          ) : (
+            <Text style={{ color: colorMap[theme + 'Text2'] }}>
+              {translation[language]['No upcoming blooming plants.']}
+            </Text>
+          )}
+        </View>
+
+        {/* Features Section */}
+        <View style={styles.featuresContainer}>
           <Text style={[styles.sectionTitle, { color: colorMap[theme + "Text"] }]}>
-            {translation[language]['Currently blooming']}
+            {translation[language]['Features']}
           </Text>
-          <View style={styles.allergyList}>
-            {currentlyBlooming.length === 0 ? (
-              <Text style={[styles.supertext, { color: colorMap[theme + "Text2"] }]}>
-                {translation[language]['The plants you have selected are currently out of season']}
-              </Text>
-            ) : (
-              currentlyBlooming.map((plant, index) => (
-                <View key={index} style={[styles.currentAllergyContainer, {backgroundColor: colorMap[theme+"Widget2"]}]}>
-                  <Text style={[styles.allergyText, { color: colorMap[theme + "Text"] }]}>
-                    {translation[language][plant.name] || plant.name}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.intensityText,
-                      { color: intensityColor[plant.intensity] },
-                    ]}
-                  >
-                    {translation[language][plant.intensity] || plant.intensity}
-                  </Text>
-                </View>
-              ))
-            )}
-          </View> 
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("PlantsLibrary")}
+            style={[styles.featureButton, { backgroundColor: colorMap[theme + "Widget"], shadowColor: colorMap[theme+"Shadow"]}]}
+          >
+            <Text style={[styles.featureButtonText, { color: colorMap[theme + "Text"] }]}>
+              {translation[language]['Plants']}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.gaugeContainer}>
-          {/* Dynamically load the gauge image based on maxIntensity */}
-          <Image source={intensityImageMap[language][maxIntensity][theme]} style={styles.gaugeImage} />
-          <Text style={[styles.locationText, { color: colorMap[theme + "Text"] }]}>
-            {translation[language]['Your location']}
-          </Text>
-          <Text style={[styles.placeText, { color: colorMap[theme + "Text2"] }]}>{city}</Text>
-        </View>
-      </View>
+      </ScrollView>
+      {/* Tint */}
+      {showOfflinePanel && (
+        <View style={{height: "100%", width: "100%", position: "absolute", zIndex: 1, backgroundColor: "rgba(0, 0, 0, 0.42)"}}></View>
+      )}
 
-      
-      
-      {/* <Text>{recommendations[language][maxIntensity]["Symptoms"]}</Text>
-      <Text>{recommendations[language][maxIntensity]["Precautions"]}</Text>
-      <Text>{recommendations[language][maxIntensity]["Recommendation"]}</Text> */}
-
-
-      {/* Weekly intensity graph */}
-      <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Weekly intensity graph"]}</Text>
-      <WeeklyIntensityChart2 language={language} theme={theme} weeklyIntensityMap={weeklyIntensityMap}></WeeklyIntensityChart2>
-
-      {/* Recomemndations */}
-      <View style={[styles.recommendationsContainer, { borderColor: colorMap[theme+"Widget2"], shadowColor: colorMap[theme + "Shadow"]}]}>
-        <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Symptoms"]}</Text>
-        <View style={{paddingHorizontal: 30}}>
-          <Text style={{color: colorMap[theme+"Text"]}}>{recommendations[language][maxIntensity]["Symptoms"]}</Text>
-        </View>
-        <Text style={[styles.sectionTitle, {color: colorMap[theme+"Text"], marginRight: 11, marginTop: 25, marginLeft: 24}]}>{translation[language]["Recommendations"]}</Text>
-        <View style={{paddingHorizontal: 30}}>
-          <Text style={{color: colorMap[theme+"Text"]}}>{recommendations[language][maxIntensity]["Recommendations"]}</Text>
-        </View>
-      </View>
-    
-
-      {/* Upcoming Section */}
-      <View style={styles.upcomingContainer}>
-        <Text style={[styles.sectionTitle, { color: colorMap[theme + 'Text'] }]}>
-          {translation[language]['Upcoming']}
-        </Text>
-        {upcomingDates.length > 0 ? (
-          upcomingDates.map((plant, index) => (
-            <UpcomingAllergy key={index} plant={plant[0]} date={plant[1]} language={language} theme={theme} />
-          ))
-        ) : (
-          <Text style={{ color: colorMap[theme + 'Text2'] }}>
-            {translation[language]['No upcoming blooming plants.']}
-          </Text>
-        )}
-      </View>
-
-      {/* Features Section */}
-      <View style={styles.featuresContainer}>
-        <Text style={[styles.sectionTitle, { color: colorMap[theme + "Text"] }]}>
-          {translation[language]['Features']}
-        </Text>
-        <TouchableOpacity 
-          onPress={() => navigation.navigate("PlantsLibrary")}
-          style={[styles.featureButton, { backgroundColor: colorMap[theme + "Widget"], shadowColor: colorMap[theme+"Shadow"]}]}
-        >
-          <Text style={[styles.featureButtonText, { color: colorMap[theme + "Text"] }]}>
-            {translation[language]['Plants']}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      {/* Panels */}
+      {showOfflinePanel && (
+        <OfflinePanel theme={theme || 'light'} setShowOfflinePanel={setShowOfflinePanel}></OfflinePanel>
+      )}
+    </View>
   );
 };
 
@@ -603,7 +653,7 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
   },
   upcomingContainer: {
-    height: 200, // Static height for upcoming container
+    height: "auto", // Static height for upcoming container
     paddingHorizontal: 20, // Margin for left and right
     marginTop: 30,
   },
@@ -626,7 +676,7 @@ const styles = StyleSheet.create({
   featuresContainer: {
     height: 150, // Static height for features container
     paddingHorizontal: 20, // Margin for left and right
-    marginTop: 70,
+    marginTop: 25,
   },
   featureButton: {
     height: 70, // Static height for feature buttons
@@ -697,7 +747,61 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: -7
     //borderStyle: "dashed"
-  }
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 20,
+    marginTop: 30,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 20,
+  },
+  filledButton: {
+    backgroundColor: colorMap["green"],
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+  },
+  filledButtonText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#fff"
+  },
+  logoutPanel: {
+    position: 'absolute',
+    zIndex: 2,
+    top: '30%', 
+    left: '50%',
+    transform: [{ translateX: -150 }],
+    width: 300, 
+    padding: 20,
+    paddingBottom: 20,
+    borderRadius: 18,
+    elevation: 3
+  },
+  deleteButton: {
+    borderColor: "#4b4b4b",
+    borderWidth: 1,
+    borderRadius: 12,
+    height: 40,
+    width: 120, 
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: colorMap["green"],
+    borderRadius: 12,
+    height: 40,
+    width: 120, 
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default HomePage;
