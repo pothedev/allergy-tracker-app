@@ -3,20 +3,26 @@ export const colorMap: Record<string, string> = {
   darkWidget: 'rgba(30, 30, 30, 1)',
   darkWidget2: 'rgba(40, 40, 40, 1)',
   darkWidget3: 'rgba(48, 48, 48, 1)',
+  darkWidget4: 'rgb(88, 88, 88)',
   darkText: 'rgb(235, 235, 235)',
   darkText2: 'rgba(158, 158, 158, 1)',
   darkText3: 'rgb(217, 209, 209)',
   darkShadow: 'rgba(0, 0, 0, 1)',
   darkGrid: 'rgb(55, 55, 55)',
+  darkRed: 'rgb(161, 15, 15)',
+
   lightBackground: 'rgba(247, 247, 247, 1)',
   lightWidget: 'rgba(255, 255, 255, 1)',
   lightWidget2: 'rgba(229, 229, 229, 1)',
   lightWidget3: 'rgb(240, 240, 240)',
+  lightWidget4: 'rgb(144, 144, 144)',
   lightText: 'rgba(33, 36, 39, 1)',
   lightText2: 'rgba(120, 120, 120, 1)',
   lightText3: 'rgb(23, 23, 23)',
   lightShadow: 'rgba(199, 199, 199, 1)',
   lightGrid: 'rgb(200, 200, 200)',
+  lightRed: 'rgb(219, 71, 71)',
+
   green: 'rgba(81, 158, 25, 1)',
 };
 
@@ -50,15 +56,6 @@ export const intensityColor3: Record<number, string> = {
   5: '#B60C17',
 };
 
-export const defaultBloomingDates: Record<string, string[]> = {
-  "ragweed": ["25/7", "10/10"],
-  "mugwort": ["20/7", "30/9"],
-  "birch": ["10/4", "10/5"],
-  "poplar": ["20/3", "30/4"],
-  "nettle": ["1/6", "25/7"],
-  "goosefoot": ["20/6", "30/9"],
-  "timothy": ["25/5", "10/7"]
-};
 
 export const months: Record<number, string> = {
   1: "January",
@@ -85,27 +82,6 @@ export const weekdays: Record<number, string> = {
   6: "Saturday",
 };
 
-export const bloomingNow: Array<[string, string, string, string]> = [
-  ["Ragweed", "High", "10/14", "10/26"],
-  ["Mugwort", "Very low", "8/3", "8/15"]
-];
-
-export const upcoming: Array<[string, string]> = [
-  ["Birch", "17 Квітня"],
-  ["Timothy", "25 Червня"],
-  ["Poplar", "12 Квітня"],
-];
-
-export const bloomingDict: Record<string, [string, string, string, string]> = {
-  "Ragweed": ["Ragweed", "High", "10/14", "10/26"],
-  "Mugwort": ["Mugwort", "Very low", "8/3", "8/15"],
-};
-
-export const upcomingDict: Record<string, [string, string, string]> = {
-  "Birch": ["Birch", "17 Квітня", "4/19"],
-  "Timothy": ["Timothy", "25 Червня", "6/8"],
-  "Poplar": ["Poplar", "12 Квітня", "6/8"],
-};
 
 export const translation: Record<string, Record<string, string>> = {
   ua: {
@@ -137,11 +113,15 @@ export const translation: Record<string, Record<string, string>> = {
     "Ragweed": "Амброзія",
     "Birch": "Береза",
     "Alder": "Вільха",
+    "Oak": "Дуб",
+    "Plantain": "Подорожник",
     "Timothy": "Тимофіївка",
     "mugwort": "Полин",
     "ragweed": "Амброзія",
     "birch": "Береза",
     "alder": "Вільха",
+    "oak": "Дуб",
+    "plantain": "Подорожник",
     "timothy": "Тимофіївка",
     "Poplar": "Тополя",
     "Nettle": "Кропива",
@@ -184,7 +164,6 @@ export const translation: Record<string, Record<string, string>> = {
     "Maple": "Клен",
     "Olive": "Оливкове деревр",
     "Juniper": "Ялівець",
-    "Oak": "Дуб",
     "Pine": "Сосна",
     "Cypress pine": "Кипарисова сосна",
     "Hazel": "Ліщина",
@@ -254,7 +233,18 @@ export const translation: Record<string, Record<string, string>> = {
     "Recommendations": "Рекомендації",
     "Symptoms": "Можливі симптоми",
     "Precautions": "Запобіжні заходи",
-    "Recommendation": "Рекомендації"
+    "Recommendation": "Рекомендації",
+    "Name": "Ім'я",
+    "Email": "Пошта",
+    "Password": "Пароль",
+    "Delete Account": "Видалити акаунт",
+    "Log out": "Вийти",
+    "Enter your password": "Введіть свій пароль",
+    "Are you sure you want to delete your account?": "Ви впевнені, що хочете видалити свій акаунт?",
+    "Your data will be deleted": "Ваші дані будуть назавжди видалені і не підлягають відновленню",
+    "Delete": "Видалити",
+    "Cancel": "Скасувати",
+    "Are you sure you want to log out": "Ви впевнені, що хочете вийти зі свого акаунта?"
   },
   en: {
     "Currently blooming" : "Currently blooming",
@@ -286,6 +276,8 @@ export const translation: Record<string, Record<string, string>> = {
     "Birch": "Birch",
     "Timothy": "Timothy",
     "Alder": "Alder",
+    "Oak": "Oak",
+    "Plantain": "Plantain",
     "mugwort": "Mugwort",
     "ragweed": "Ragweed",
     "birch": "Birch",
@@ -297,6 +289,8 @@ export const translation: Record<string, Record<string, string>> = {
     "nettle": "Nettle",
     "goosefoot": "Goosefoot",
     "alder": "Alder",
+    "oak": "Oak",
+    "plantain": "Plantain",
     "Start": "start",
     "End": "end",
     "Select Plant": "Select Plant",
@@ -330,7 +324,6 @@ export const translation: Record<string, Record<string, string>> = {
     "Maple": "Maple",
     "Olive": "Olive",
     "Juniper": "Juniper",
-    "Oak": "Oak",
     "Pine": "Pine",
     "Cypress pine": "Cypress pine",
     "Hazel": "Hazel",
@@ -398,7 +391,18 @@ export const translation: Record<string, Record<string, string>> = {
     "Recommendations": "Recommendations",
     "Symptoms": "Symptoms",
     "Precautions": "Precautions",
-    "Recommendation": "Recommendation"
+    "Recommendation": "Recommendation",
+    "Name": "Name",
+    "Email": "Email",
+    "Password": "Password",
+    "Delete Account": "Delete Account",
+    "Log out": "Log out",
+    "Enter your password": "Enter your password",
+    "Are you sure you want to delete your account?": "Are you sure you want to delete your account?",
+    "Your data will be deleted": "Your data will be permanently deleted and cannot be recovered",
+    "Delete": "Delete",
+    "Cancel": "Cancel",
+    "Are you sure you want to log out?": "Are you sure you want to log out from your account?"
   },
 };
 
@@ -420,22 +424,6 @@ export const intensityGraphs: Record<string, Record<string, string>> = {
 };
   
 
-export const plants: Record<string, any> = {
-  ragweed: {
-    name: "Ragweed",
-    intensity: "High",
-    level: "Very high",
-    image: "lib/assets/ragweed.png",
-    start: "07/21/2024",
-    end: "10/18/2024",
-    veryLow: ["07/21/2024", "07/26/2024", "10/11/2024", "10/18/2024"],
-    low: ["07/27/2024", "08/03/2024", "10/04/2024", "10/10/2024"],
-    moderate: ["07/27/2024", "08/06/2024", "9/23/2024", "10/03/2024"],
-    high: ["08/07/2024", "08/28/2024", "9/11/2024", "9/22/2024"],
-    veryHigh: ["08/22/2024", "08/22/2024", "9/11/2024", "9/22/2024"],
-  }
-};
-
 export const plantDescriptions: Record<string, Record<string, string>> = {
   "ua": {
     ragweed: "Амброзія — один із найбільш поширених алергенів, який викликає сезонну алергію наприкінці літа та на початку осені. Пилок амброзії дуже легкий і може поширюватись на відстань до 300 км.",
@@ -445,7 +433,10 @@ export const plantDescriptions: Record<string, Record<string, string>> = {
     timothy: "Тимофіївка — трава, яка виділяє алергенний пилок у середині літа. Часто впливає на людей із сінною гарячкою.",
     nettle: "Кропива — алергенний пилок цієї рослини поширений влітку. Контакт із листям може також викликати подразнення шкіри.",
     goosefoot: "Лобода — бур'ян, який виділяє пилок у другій половині літа. Один із поширених викликачів сезонної алергії.",
-    alder: "Вільха — дерево, що починає пилкувати наприкінці зими та на початку весни. Її пилок є важливим тригером ранньовесняної алергії."
+    alder: "Вільха — дерево, що починає пилкувати наприкінці зими та на початку весни. Її пилок є важливим тригером ранньовесняної алергії.",
+    oak: "Дуб — дерево, що цвіте наприкінці весни та на початку літа. Його пилок може викликати сезонну алергію, особливо в лісистих районах.",
+    // mulberry: "Шовковиця — міське дерево, що активно пилкує на початку червня. Пилок шовковиці може спричинити алергічні реакції, особливо в людей, чутливих до фруктів.",
+    plantain: "Подорожник — бур’ян, поширений уздовж доріг і на луках. Його пилок здатен викликати алергію з червня до осені."
   },
   "en": {
     ragweed: "Ragweed is one of the most common allergens, causing seasonal allergies in late summer and early fall. Its lightweight pollen can travel up to 300 km.",
@@ -455,31 +446,40 @@ export const plantDescriptions: Record<string, Record<string, string>> = {
     timothy: "Timothy grass releases allergenic pollen in mid-summer. It often affects people with hay fever.",
     nettle: "Nettle pollen is common in summer and can cause allergies. Contact with its leaves may also irritate the skin.",
     goosefoot: "Goosefoot is a weed that releases pollen in late summer. It's a common trigger of seasonal allergies.",
-    alder: "Alder is a tree that begins pollinating in late winter and early spring. Its pollen is a major trigger for early spring allergies."
+    alder: "Alder is a tree that begins pollinating in late winter and early spring. Its pollen is a major trigger for early spring allergies.",
+    oak: "Oak is a tree that blooms in late spring and early summer. Its pollen can cause seasonal allergies, especially in forested regions.",
+    // mulberry: "Mulberry is an urban tree that actively pollinates in early June. Its pollen can trigger allergic reactions, particularly in people sensitive to fruits.",
+    plantain: "Plantain is a common weed found along roadsides and fields. Its pollen can cause allergies from June through autumn."
   }
 };
 
 
 export const seasonDynamics: Record<string, Record<string, string>> = {
   "ua": {
-    "ragweed": "Сезон алергії на амброзію зазвичай починається наприкінці липня або на початку серпня, досягає піку на початку чи в середині вересня та завершується до кінця жовтня.",
-    "mugwort": "Сезон алергії на полин зазвичай триває з липня до кінця вересня, з піком у серпні.",
-    "birch": "Сезон алергії на березу розпочинається в середині квітня, досягає піку наприкінці квітня або на початку травня і завершується в середині травня.",
-    "poplar": "Сезон алергії на тополю розпочинається в середині травня та завершується до кінця червня.",
-    "nettle": "Сезон алергії на кропиву триває з червня до вересня, з піком у липні та серпні.",
-    "timothy": "Сезон алергії на тимофіївку починається наприкінці травня, досягає піку у червні та завершується наприкінці липня.",
-    "goosefoot": "Сезон алергії на лободу триває з червня до вересня, з найбільшою інтенсивністю у серпні.",
-    "alder": "Сезон алергії на вільху починається у лютому, досягає піку у березні та завершується в квітні."
+    ragweed: "Сезон алергії на амброзію зазвичай починається наприкінці липня або на початку серпня, досягає піку на початку чи в середині вересня та завершується до кінця жовтня.",
+    mugwort: "Сезон алергії на полин зазвичай триває з липня до кінця вересня, з піком у серпні.",
+    birch: "Сезон алергії на березу розпочинається в середині квітня, досягає піку наприкінці квітня або на початку травня і завершується в середині травня.",
+    poplar: "Сезон алергії на тополю розпочинається в середині травня та завершується до кінця червня.",
+    nettle: "Сезон алергії на кропиву триває з червня до вересня, з піком у липні та серпні.",
+    timothy: "Сезон алергії на тимофіївку починається наприкінці травня, досягає піку у червні та завершується наприкінці липня.",
+    goosefoot: "Сезон алергії на лободу триває з червня до вересня, з найбільшою інтенсивністю у серпні.",
+    alder: "Сезон алергії на вільху починається у лютому, досягає піку у березні та завершується в квітні.",
+    oak: "Сезон алергії на дуб зазвичай триває з початку травня до середини червня, з піком у травні.",
+    // mulberry: "Сезон алергії на шовковицю розпочинається наприкінці травня та триває до середини червня.",
+    plantain: "Сезон алергії на подорожник починається на початку червня та може тривати до вересня, з піком у липні-серпні."
   },
   "en": {
-      "ragweed": "The ragweed allergy season often begins in late July or early August, peaks in early to mid-September, and ends by late October.",
-      "mugwort": "The mugwort allergy season typically runs from July to late September, with a peak in August.",
-      "birch": "The birch allergy season starts in mid-April, peaks in late April to early May, and ends by mid-May.",
-      "poplar": "The poplar allergy season begins in mid-May and ends by late June.",
-      "nettle": "The nettle allergy season lasts from June to September, peaking in July and August.",
-      "timothy": "The timothy grass allergy season starts in late May, peaks in June, and ends by late July.",
-      "goosefoot": "The goosefoot allergy season runs from June to September, with the highest intensity in August.",
-      "alder": "The alder allergy season begins in February, peaks in March, and ends in April."
+    ragweed: "The ragweed allergy season often begins in late July or early August, peaks in early to mid-September, and ends by late October.",
+    mugwort: "The mugwort allergy season typically runs from July to late September, with a peak in August.",
+    birch: "The birch allergy season starts in mid-April, peaks in late April to early May, and ends by mid-May.",
+    poplar: "The poplar allergy season begins in mid-May and ends by late June.",
+    nettle: "The nettle allergy season lasts from June to September, peaking in July and August.",
+    timothy: "The timothy grass allergy season starts in late May, peaks in June, and ends by late July.",
+    goosefoot: "The goosefoot allergy season runs from June to September, with the highest intensity in August.",
+    alder: "The alder allergy season begins in February, peaks in March, and ends in April.",
+    oak: "The oak allergy season usually lasts from early May to mid-June, peaking in May.",
+    // mulberry: "The mulberry allergy season starts in late May and continues through mid-June.",
+    plantain: "The plantain allergy season begins in early June and can last until September, with a peak in July–August."
   }
 };
 
@@ -493,21 +493,25 @@ export const crossReactions: Record<string, string[]> = {
   nettle: ["Tomato", "Eggplant", "Cucumber", "Melon", "Watermelon"],
   timothy: ["Wheat", "Rye", "Oat", "Corn"],
   goosefoot: ["Spinach", "Beetroot", "Quinoa", "Chard"],
-  alder: ["Apple", "Cherry", "Peach", "Strawberry", "Celery", "Hazelnut", "Almond"]
+  alder: ["Apple", "Cherry", "Peach", "Strawberry", "Celery", "Hazelnut", "Almond"],
+  oak: ["Apple", "Hazelnut", "Peach", "Peanut", "Wheat"],
+  // mulberry: ["Peach", "Apple", "Melon", "Banana", "Celery"],
+  plantain: ["Melon", "Tomato", "Watermelon", "Zucchini", "Cucumber"]
 };
 
 
 export const bloomingDates: Record<string, string[]> = {
   ragweed: ["22/07/2025", "31/10/2025"],
-  //ragweed: ["13/12/2024", "12/02/2025"],
   mugwort: ["13/07/2025", "30/09/2025"],
-  //mugwort: ["01/01/2025", "20/02/2025"],
   birch: ["01/04/2025", "31/05/2025"],
   poplar: ["5/02/2025", "30/04/2025"],
   timothy: ["25/05/2025", "15/07/2025"],
   nettle: ["01/06/2025", "31/08/2025"],
   goosefoot: ["15/07/2025", "30/09/2025"],
-  alder: ["15/01/2025", "27/03/2025"]
+  alder: ["15/01/2025", "27/03/2025"],
+  oak: ["20/04/2025", "20/06/2025"],
+  // mulberry: ["25/05/2025", "20/06/2025"],
+  plantain: ["15/05/2025", "20/07/2025"]
 };
 
 export const levels: Record<string, number> = { 
@@ -518,7 +522,9 @@ export const levels: Record<string, number> = {
   timothy: 3,
   nettle: 1,
   goosefoot: 0,
-  alder: 4
+  alder: 4,
+  plantain: 3,
+  oak: 3
 };
  
 

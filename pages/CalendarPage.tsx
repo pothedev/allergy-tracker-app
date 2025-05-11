@@ -2,10 +2,9 @@ import React, { useState, useEffect, useContext} from "react";
 import { CalendarList } from "react-native-calendars";
 import { VStack, Box, Select, CheckIcon } from "native-base";
 import { translation, intensityColor2, bloomingDates } from "../data";
-import { colorMap, levels} from "../data"; // Import color map
+import { colorMap} from "../data"; // Import color map
 import { StyleSheet } from "react-native";
 import { LogBox } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import StorageContext from "./StorageContext"
 
 // Ignore all log notifications
@@ -111,7 +110,6 @@ const CalendarPage: React.FC = () => {
             prevIntensity = intensityLevel;
         });
     });
-
     setMarkedDates(dates);
 };
 
@@ -129,7 +127,7 @@ const CalendarPage: React.FC = () => {
           minWidth="200"
           placeholder={translate("Select Plant")}
           onValueChange={(itemValue) => setSelectedPlant(itemValue)}
-          style={[styles.text, { color: colorMap[theme + "Text"] }]} // Selected item text color
+          style={[styles.text, { color: colorMap[theme + "Text"]}]} // Selected item text color
           _selectedItem={{
             bg: colorMap[theme + "Widget2"], // Background color for the selected item
             color: colorMap[theme + "Text"], // Text color for the selected item
@@ -145,7 +143,7 @@ const CalendarPage: React.FC = () => {
             <CheckIcon size="5" color={colorMap[theme + "Text"]} /> // Dropdown arrow icon color
           }
         >
-        {["All", "Ragweed", "Mugwort", "Birch", "Poplar", "Timothy", "Goosefoot", "Nettle", "Alder"].map((plant) => (
+        {["All", "Ragweed", "Mugwort", "Birch", "Poplar", "Timothy", "Goosefoot", "Nettle", "Alder", "Oak", "Plantain"].map((plant) => (
           <Select.Item
             key={plant}
             label={translate(plant)}

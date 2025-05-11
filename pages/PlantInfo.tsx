@@ -13,6 +13,8 @@ import nettleImage from "../assets/nettle.png"
 import timothyImage from "../assets/timothy.png"
 import goosefootImage from "../assets/goosefoot.png"
 import alderImage from "../assets/alder.png"
+import oakImage from "../assets/oak.png";
+import plantainImage from "../assets/plantain.png";
 
 import infoImage from "../assets/info.png"
 
@@ -64,6 +66,12 @@ const Hello: React.FC<{ theme: any; language: any; plant: string }> = ({ plant, 
   if (plant == "timothy"){
     return <TimothyChart theme={theme} language={language}/>
   }
+  if (plant == "oak"){
+    return <OakChart theme={theme} language={language}/>
+  }
+  if (plant == "plantain"){
+    return <TimothyChart theme={theme} language={language}/>
+  }
   else{
     return <RagweedChart theme={theme} language={language}/>    
   }
@@ -79,9 +87,6 @@ const WeeklyIntensityChart: React.FC<{ theme: any; language: any; plant: string 
   if (!storage) return null;
   const { storedData } = storage
 
-  const currentlyBlooming = storedData.currentlyBlooming
-  // const language = storedData.language
-  // const theme = storedData.theme
   
   const adjustedBloomingDates = storedData.adjustedBloomingDates
  
@@ -563,6 +568,55 @@ const GoosefootChart: React.FC<{ theme: any, language: any}> = ({ theme, languag
   );
 };
 
+const OakChart: React.FC<{ theme: any, language: any}> = ({ theme, language }) => {
+  const chartData = {
+    labels: [
+      translation[language]["Mar"] || "Mar",
+      translation[language]["Apr"] || "Apr",
+      translation[language]["Ma"] || "May",
+      translation[language]["Jun"] || "Jun",
+      translation[language]["Jul"] || "Jul",
+    ],
+    datasets: [
+      {
+        data: [0, 0, 2, 4, 5, 4, 2, 0, 0, 0], // Allergy intensity values
+        strokeWidth: 2, // Line thickness
+        color: (opacity = 1) => `${colorMap["green"]}${opacity})`, // Line color
+      },
+    ],
+  };
+
+  const chartConfig = {
+    backgroundGradientFrom: colorMap[theme+"Widget"],
+    backgroundGradientTo: colorMap[theme+"Widget"],
+    color: (opacity = 1) => colorMap[theme+"Text"],
+    propsForBackgroundLines: {
+      stroke: colorMap[theme+"Grid"], // Grid lines in teal with light opacity
+      strokeDasharray: "6" // Optional: dashed grid lines
+    },
+    strokeWidth: 2, // Optional: Line thickness
+    decimalPlaces: 0, // Number of decimal places
+    propsForDots: {
+      r: "5",
+      strokeWidth: "2",
+    },
+  };
+
+  return (
+    <View style={[styles.container2, {backgroundColor: colorMap[theme+"Widget"]}]}>
+      <LineChart
+        data={chartData}
+        width={screenWidth - 53}
+        height={220}
+        chartConfig={chartConfig}
+        // bezier
+        style={[styles.chart, {backgroundColor: colorMap[theme+"Widget"]}]}
+        segments={5}
+      />
+    </View>
+  );
+};
+
 export const plantImages: Record<string, ImageSourcePropType> = {
   ragweed: ragweedImage,
   mugwort: mugwortImage,
@@ -571,7 +625,9 @@ export const plantImages: Record<string, ImageSourcePropType> = {
   nettle: nettleImage,
   timothy: timothyImage,
   goosefoot: goosefootImage,
-  alder: alderImage
+  alder: alderImage,
+  oak: oakImage,
+  plantain: plantainImage
 };
 
 const PlantInfo: React.FC<{ route: any, navigation: any}> = ({ route, navigation }) => {
