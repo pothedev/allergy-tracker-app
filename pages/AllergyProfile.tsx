@@ -8,6 +8,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import GetLocation from 'react-native-get-location';
 import axios from 'axios';
+import { Platform } from 'react-native';
 
 
 import { doc, setDoc } from "firebase/firestore";
@@ -218,32 +219,53 @@ const AllergyProfile: React.FC<{ route: any; navigation: any; setLoggedIn:any }>
 
   ***REMOVED***
 
-
   const handleLocationAllow = async () => {
     setShowLocationPanel(false);
     try {
-      const result = await request(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
-      if (result === RESULTS.GRANTED) {
-        const location = await GetLocation.getCurrentPosition();
-        const newLat = location.latitude.toString();
-        const newLon = location.longitude.toString();
-        
-        // Get city name
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${newLat},${newLon}&key=${geocodingApiKey}`;
-        const response = await axios.get(url);
-        const cityName = response.data.results[0]?.components?.city || 'Unknown City';
+      const permission = Platform.select({
+        android: PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+        ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+      });
 
-        updateStoredData("city", cityName);
-        updateStoredData("latitude", newLat);
-        updateStoredData("longitude", newLon);
+      if (permission) {
+        const result = await request(permission);
+        console.log(result);
+        if (result === RESULTS.GRANTED) {
+          const location = await GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 15000,
+          });
+
+          const newLat = location.latitude.toString();
+          const newLon = location.longitude.toString();
+
+          // Get city name using OpenCage Geocoding API
+          const url = `https://api.opencagedata.com/geocode/v1/json?q=${newLat},${newLon}&key=${geocodingApiKey}`;
+          const response = await axios.get(url);
+          const cityName = response.data.results[0]?.components?.city 
+                          || response.data.results[0]?.components?.town 
+                          || response.data.results[0]?.components?.village 
+                          || 'Unknown City';
+
+          updateStoredData("city", cityName);
+          updateStoredData("latitude", newLat);
+          updateStoredData("longitude", newLon);
+
+        } else {
+          console.log('Location permission denied or unavailable.');
+        }
+      } else {
+        console.warn("Unsupported platform for location permission");
       }
+      
     } catch (error) {
       console.error('Location fetch failed:', error);
     } finally {
-      console.log("allowed, redirecting")
+      console.log("allowed, redirecting");
       setLoggedIn(true);
     }
   };
+
 
   const handleLocationDeny = () => {
     setShowLocationPanel(false);
