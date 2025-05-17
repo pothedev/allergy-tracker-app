@@ -127,23 +127,48 @@ const Login: React.FC<{ navigation: any; setLoggedIn:any}> = ({ navigation, setL
 
   const handleLocationAllow = async () => {
     setShowLocationPanel(false);
+
     try {
-      const result = await request(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+      // Select permission based on platform
+      const permission = Platform.select({
+        android: PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+        ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+      });
+
+      if (!permission) {
+        console.warn("Unsupported platform for location permission");
+        return;
+      }
+
+      const result = await request(permission);
+
       if (result === RESULTS.GRANTED) {
-        const location = await GetLocation.getCurrentPosition();
+        const location = await GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        });
+
         const newLat = location.latitude.toString();
         const newLon = location.longitude.toString();
-  
+
         const url = `https://api.opencagedata.com/geocode/v1/json?q=${newLat},${newLon}&key=${geocodingApiKey}`;
         const response = await axios.get(url);
-        const cityName = response.data.results[0]?.components?.city || 'Unknown City';
-  
+        const components = response.data.results[0]?.components;
+
+        const cityName =
+          components?.city ||
+          components?.town ||
+          components?.village ||
+          'Unknown City';
+
         updateStoredData("city", cityName);
         updateStoredData("latitude", newLat);
         updateStoredData("longitude", newLon);
+      } else {
+        console.log("Location permission denied or unavailable.");
       }
     } catch (error) {
-      console.error("Location permission failed:", error);
+      console.error("Location fetch failed:", error);
     } finally {
       setLoggedIn(true);
     }
