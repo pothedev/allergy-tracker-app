@@ -86,3 +86,6 @@ coverage/
 # Misc
 *.swp
 *.lock
+
+appAsyncStorage.json
+firebaseConfig.ts
