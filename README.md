@@ -93,4 +93,10 @@ You can download the latest Android version here:
 
 👉 [**Download APK from Releases**](https://github.com/pothedev/allergy-tracker-app/releases/tag/release)
 
-> No installation or setup required — just download and start using.
+---
+
+## 📘 Related Repositories
+
+* **Intensity Predictor** [allergy-tracker-intensity-predictor](https://github.com/pothedev/allergy-tracker-intensity-predictor)
+
+* **Blooming Dates Predictor:** [allergy-tracker-bloom-predictor](https://github.com/pothedev/allergy-tracker-bloom-predictor)

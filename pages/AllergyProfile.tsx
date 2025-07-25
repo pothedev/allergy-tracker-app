@@ -217,7 +217,7 @@ const AllergyProfile: React.FC<{ route: any; navigation: any; setLoggedIn:any }>
     }));
   };
 
-  ***REMOVED***
+  const geocodingApiKey = '0dd188da8e294b02aa0871972eda5642';
 
   const handleLocationAllow = async () => {
     setShowLocationPanel(false);

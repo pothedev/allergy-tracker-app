@@ -119,7 +119,7 @@ const Login: React.FC<{ navigation: any; setLoggedIn:any}> = ({ navigation, setL
   if (!storage) return null;
   const { storedData, updateStoredData } = storage
 
-  ***REMOVED***
+  const geocodingApiKey = '0dd188da8e294b02aa0871972eda5642';
 
   const textColor = colorMap[theme1+"Text"]
   const textColor1 = colorMap[theme1+"Text"]
