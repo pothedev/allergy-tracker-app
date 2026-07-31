@@ -1,102 +1,120 @@
 # 🌿 Allergy Tracker
 
-**Allergy Tracker** is a cross-platform mobile app that predicts and visualizes seasonal allergy periods using real-time environmental data and machine learning. It’s designed for individuals with pollen allergies, helping them anticipate risk days, plan outdoor activity, and manage symptoms effectively.
+Allergy Tracker is a cross-platform mobile application that predicts and visualizes seasonal allergy periods using machine learning and real-time environmental data.
+
+The project combines two independently deployed machine learning services with live weather and pollen information to generate personalized allergy forecasts.
 
 ---
 
-## 🚀 Key Features
+## 📸 Screenshots
 
-### 📅 Calendar View
-- View blooming windows for allergenic plants
-- Intensity graph using color-coded forecast per day
-- Dynamically updates with new data
+### Main Application
 
-### 🗺️ Map View
-- Interactive map powered by **Mapbox** and **Breezometer**
-- Clickable regions provide 5-day forecasts and list of blooming plants
-- Highlights pollen zones based on personalized sensitivity
+The screenshots below showcase the core functionality of the application:
 
-### 📚 Plant Library
-- Details on allergenic plants: bloom periods, images, cross-reactions
-- Weekly bloom prediction chart per plant
-- Filters based on user allergies
+- Home screen
+- Allergy calendar
+- Interactive pollen map
+- Plant library
 
 ![App Screenshot](readme_images/allergy_tracker_ss1.png)
 
----
+### Authentication
 
-### 🔐 User Accounts & Personalization
-
-- **Firebase Authentication** (email + password)
-- Stores:
-  - Allergy sensitivity levels (0–5 per plant)
-  - Preferred language and theme (light/dark)
-  - Location preference
-- All settings sync to cloud and remain available across devices
-- **Account deletion** removes all local and remote data immediately
-
-> 🌐 Offline support: fallback to cached predictions and stored preferences using AsyncStorage.
+Example authentication screens.
 
 ![App Screenshot](readme_images/allergy_tracker_ss2.png)
 
 ---
 
-## 🤖 Machine Learning Models
+## 🚀 Features
 
-### 1. **Bloom Prediction Model** – *(Random Forest Regression)*
-- Predicts start/end bloom dates using historical pollen and weather
-- Adjusts per region and year
-
-### 2. **Two-Stage Pollen Intensity Model**
-**Stage 1: Normal distribution**
-- Creates a baseline intensity curve between predicted bloom start and end
-
-**Stage 2: Real-time environmental adjustments**
-- Inputs:
-  - Temperature delta
-  - Humidity
-  - Rainfall
-  - Cloud cover
-  - Wind speed
-  - CO₂ concentration
-- Trained to apply realistic daily corrections to baseline (94% accuracy)
+- Personalized allergy forecasts
+- Seasonal blooming calendar
+- Interactive pollen map
+- Plant encyclopedia
+- Offline support using cached data
 
 ---
 
-## 📡 APIs & Data Sources
+## 🤖 Prediction Pipeline
 
-- **Open-Meteo** – Regional weather + location suggestions
-- **OpenCageData** – Coordinate-to-city conversion
-- **Breezometer** – Real-time pollen concentration and map tiles
-- **Firebase** – Auth + secure storage of user data
+The application generates allergy forecasts through a two-stage machine learning pipeline.
 
----
+### 📅 Bloom Date Prediction
 
-## 🛠 Technology Stack
+A **Random Forest Regression** model predicts the beginning and end of each plant's blooming season using historical weather and pollen data.
 
-| Layer      | Tools / Frameworks |
-|------------|--------------------|
-| Frontend   | React Native CLI   |
-| Backend    | Python (Render)    |
-| ML Models  | Random Forest      |
-| Storage    | Firebase Firestore |
-| Offline    | AsyncStorage       |
-| Map        | Mapbox + Breezometer |
-| APIs       | Open-Meteo, Breezometer, OpenCageData |
+### 📈 Pollen Intensity Prediction
+
+Using the predicted blooming window, a baseline pollen intensity curve is generated and refined by a second **Random Forest Regression** model using real-time environmental conditions:
+
+- Temperature deviation
+- Humidity
+- Wind speed
+- Cloud cover
+
+The resulting daily intensity values are displayed in the calendar and on the interactive map.
 
 ---
 
+## 🏗️ Architecture
 
-## 📦 How to Use the App
+The mobile application communicates directly with two independently deployed Flask APIs:
 
-You can download the latest Android version here:
+- 📅 **Bloom Date Prediction API** – predicts blooming start and end dates.
+- 📈 **Pollen Intensity Prediction API** – predicts daily pollen intensity throughout the blooming period.
 
-👉 [**Download APK from Releases**](https://github.com/pothedev/allergy-tracker-app/releases/tag/release)
+Both services expose REST endpoints and are deployed on Render using Gunicorn.
 
 ---
 
-## 📘 Related Repositories
+## 📡 External Services
 
-* **Intensity Predictor** [allergy-tracker-intensity-predictor](https://github.com/pothedev/allergy-tracker-intensity-predictor)
+- **Open-Meteo** — weather forecasts
+- **OpenCageData** — reverse geocoding
+- **Breezometer** — pollen data and map layers
+- **Mapbox** — interactive maps
 
-* **Blooming Dates Predictor:** [allergy-tracker-bloom-predictor](https://github.com/pothedev/allergy-tracker-bloom-predictor)
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|--------|--------------|
+| Frontend | React Native CLI |
+| Backend APIs | Flask |
+| Machine Learning | scikit-learn (Random Forest Regression) |
+| Deployment | Render, Gunicorn |
+| Maps | Mapbox |
+| Weather & Pollen Data | Open-Meteo, Breezometer |
+| Geocoding | OpenCageData |
+| Offline Storage | AsyncStorage |
+
+---
+
+## 📦 Installation
+
+Download the latest Android APK from the **Releases** section.
+
+---
+
+## 📚 Related Repositories
+
+### 📅 Bloom Date Prediction API
+
+Flask service responsible for predicting blooming start and end dates using machine learning.
+
+`allergy-tracker-bloom-predictor`
+
+### 📈 Pollen Intensity Prediction API
+
+Flask service responsible for generating daily pollen intensity forecasts from environmental conditions.
+
+`allergy-tracker-intensity-predictor`
+
+---
+
+## 📝 Development Notes
+
+This was my first large-scale software project and my first experience with React Native, backend development, machine learning, and deployment. It served as a learning project and laid the foundation for my later work.
